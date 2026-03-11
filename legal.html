@@ -28,6 +28,22 @@
   <button type="submit">Start chat</button>
 </form>
 
+    <script>
+document.getElementById('prechat-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const firstName = document.getElementById('firstName').value;
+  const email = document.getElementById('email').value;
+
+  Genesys('command', 'Messenger.open', {}, {
+    customAttributes: {
+      firstName: firstName,
+      email: email
+    }
+  });
+});
+</script>
+
     
 <script type="text/javascript" charset="utf-8">
   (function (g, e, n, es, ys) {
@@ -45,21 +61,6 @@
 </script>
 
 
-<script>
-document.getElementById('prechat-form').addEventListener('submit', function (e) {
-  e.preventDefault();
-
-  const firstName = document.getElementById('firstName').value;
-  const email = document.getElementById('email').value;
-
-  Genesys('command', 'Messenger.open', {}, {
-    customAttributes: {
-      firstName: firstName,
-      email: email
-    }
-  });
-});
-</script>
 
     
 </body>
