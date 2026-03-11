@@ -44,5 +44,23 @@
   });
 </script>
 
+
+<script>
+document.getElementById('prechat-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const firstName = document.getElementById('firstName').value;
+  const email = document.getElementById('email').value;
+
+  Genesys('command', 'Messenger.open', {}, {
+    customAttributes: {
+      firstName: firstName,
+      email: email
+    }
+  });
+});
+</script>
+
+    
 </body>
 </html>
