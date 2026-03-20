@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Platon Card — Agent Simulator</title>
+  <style>
+    :root{--bg:#f4fbf7;--panel:#fff;--accent:#0a8f6f;--muted:#666}
+    *{box-sizing:border-box;font-family:Segoe UI,Arial,Helvetica,sans-serif}
+    body{margin:0;background:var(--bg);color:#111}
+    header{background:linear-gradient(90deg,#0a8f6f,#2ccf9b);color:#fff;padding:14px 20px}
+    header h1{margin:0;font-size:18px}
+    .wrap{padding:16px;display:grid;grid-template-columns:300px 1fr;gap:16px}
+    .panel{background:var(--panel);border-radius:8px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea,button{width:100%;padding:8px;border-radius:6px;border:1px solid #e6f1ee}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:8px}
+    .row > *{flex:1}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    .accent{background:var(--accent);color:#fff;border:0}
+    .secondary{background:#fff;border:1px solid #ddd}
+    .log{height:180px;overflow:auto;background:#02120f;color:#c9ffee;padding:10px;border-radius:6px;font-family:monospace;font-size:13px}
+    .meta{color:var(--muted);font-size:13px}
+    .smallbtn{padding:6px 8px;border-radius:6px}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Platon Card — Agent Simulator (Card Dept.)</h1>
+  </header>
+
+  <main class="wrap">
+    <aside class="panel">
+      <h2 id="cust-name">Arek Kowalczuk</h2>
+      <div class="meta" id="cust-meta">PBZ Retail • Client ID: 112233</div>
+
+      <div style="margin-top:10px">
+        <label>Phone</label>
+        <input id="cust-phone" value="+385 99 112 233">
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Verification</label>
+        <select id="verify">
+          <option>— Select —</option>
+          <option>Verified: DOB</option>
+          <option>Verified: Last4</option>
+          <option>Not verified</option>
+        </select>
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Agent Notes</label>
+        <textarea id="notes" placeholder="Notes..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="accent" onclick="saveNotes()">Save Notes</button>
+        <button class="secondary" onclick="loadSample()">Load Sample</button>
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>Card Operations</strong>
+          <div class="meta">Simulate Platon credit card tasks</div>
+        </div>
+        <div class="meta">Agent: Card Dept.</div>
+      </div>
+
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 260px;gap:12px">
+        <div>
+          <label>Operation</label>
+          <select id="operation">
+            <option>New Application</option>
+            <option>Card Activation</option>
+            <option>Block Card</option>
+            <option>Unblock Card</option>
+            <option>Send e-Sign Link</option>
+          </select>
+
+          <div id="appFields" style="margin-top:10px">
+            <label>Card Variant</label>
+            <select id="cardVariant"><option>Platon Classic</option><option>Platon Gold</option><option>Platon Business</option></select>
+
+            <div class="row" style="margin-top:8px">
+              <div>
+                <label>Requested Limit</label>
+                <input id="limit" type="number" value="3000">
+              </div>
+              <div>
+                <label>Income</label>
+                <input id="income" type="number" value="7000">
+              </div>
+            </div>
+
+            <div style="margin-top:8px">
+              <label>Employer</label>
+              <input id="employer" value="PBZ d.o.o.">
+            </div>
+
+            <div style="margin-top:8px">
+              <label>Purpose</label>
+              <textarea id="purpose" placeholder="Reason for card"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label>Quick Actions</label>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <button class="smallbtn" onclick="simulateActivation()">Simulate Activation</button>
+            <button class="smallbtn" onclick="simulateBlock()">Simulate Block</button>
+            <button class="smallbtn" onclick="sendESign()">Send e-Sign Link</button>
+            <button class="smallbtn" onclick="printSummary()">Print Summary</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="accent" onclick="performOperation()">Perform</button>
+        <button class="secondary" onclick="clearSummary()">Clear</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <strong>Operation Summary</strong>
+        <pre id="summary" style="background:#f0fff8;padding:10px;border-radius:6px;margin-top:8px"></pre>
+      </div>
+
+      <div style="margin-top:12px">
+        <strong>Activity Log</strong>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const logEl = document.getElementById('log');
+    function log(msg){const t=new Date().toLocaleTimeString();logEl.innerText = `[${t}] ${msg}\n` + logEl.innerText}
+
+    document.getElementById('operation').addEventListener('change', (e)=>{
+      const op=e.target.value;
+      document.getElementById('appFields').style.display = (op==='New Application')? 'block':'block';
+    });
+
+    function saveNotes(){localStorage.setItem('platon_notes', document.getElementById('notes').value);log('Notes saved')}
+    function loadSample(){document.getElementById('cust-name').innerText='Lucija Grgić';document.getElementById('cust-meta').innerText='PBZ Retail • Client ID: 445566';document.getElementById('cust-phone').value='+385 95 445 566';document.getElementById('employer').value='Tech d.o.o.';log('Sample customer loaded')}
+
+    function performOperation(){const op=document.getElementById('operation').value;const verified=document.getElementById('verify').value;
+      if(verified.indexOf('Not')>=0 && op!=='Send e-Sign Link'){alert('Please verify customer before performing this operation');log('Operation blocked: not verified');return}
+
+      const summary = {op, name:document.getElementById('cust-name').innerText, phone:document.getElementById('cust-phone').value};
+      if(op==='New Application'){
+        summary.card = document.getElementById('cardVariant').value;
+        summary.limit = document.getElementById('limit').value;
+        summary.income = document.getElementById('income').value;
+        summary.employer = document.getElementById('employer').value;
+        summary.purpose = document.getElementById('purpose').value;
+        log('New application submitted for ' + summary.name + ' — ' + summary.card);
+      } else if(op==='Card Activation'){
+        log('Card activation requested for ' + summary.name);
+      } else if(op==='Block Card'){
+        log('Card block requested for ' + summary.name);
+      } else if(op==='Unblock Card'){
+        log('Card unblock requested for ' + summary.name);
+      } else if(op==='Send e-Sign Link'){
+        log('e-Sign link sent to ' + summary.phone);
+      }
+      document.getElementById('summary').innerText = JSON.stringify(summary,null,2);
+    }
+
+    function simulateActivation(){log('Simulated: activation flow run');alert('Activation simulated')}
+    function simulateBlock(){log('Simulated: block flow run');alert('Block simulated')}
+    function sendESign(){const phone=document.getElementById('cust-phone').value;log('e-Sign link sent to ' + phone);alert('e-Sign link (mock) sent')}
+    function printSummary(){const s=document.getElementById('summary').innerText; if(!s) {alert('No summary to print');return} const w=window.open('','_blank');w.document.write('<pre>'+s.replace(/</g,'&lt;')+'</pre>');w.print();}
+    function clearSummary(){document.getElementById('summary').innerText='';log('Summary cleared')}
+
+    (function(){const saved=localStorage.getItem('platon_notes'); if(saved){document.getElementById('notes').value=saved}})();
+  </script>
+</body>
+</html>

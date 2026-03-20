@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kron Card — Agent Simulator</title>
+  <style>
+    :root{--bg:#f7f9fc;--panel:#fff;--accent:#b21f2d;--muted:#666}
+    *{box-sizing:border-box;font-family:Segoe UI,Arial,Helvetica,sans-serif}
+    body{margin:0;background:var(--bg);color:#111}
+    header{background:linear-gradient(90deg,#b21f2d,#e94b55);color:#fff;padding:14px 20px}
+    header h1{margin:0;font-size:18px}
+    .wrap{padding:16px;display:grid;grid-template-columns:320px 1fr;gap:16px}
+    .panel{background:var(--panel);border-radius:8px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea,button{width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef6}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:8px}
+    .row > *{flex:1}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    .accent{background:var(--accent);color:#fff;border:0}
+    .secondary{background:#fff;border:1px solid #ddd}
+    .log{height:180px;overflow:auto;background:#0b0b0f;color:#f6d9db;padding:10px;border-radius:6px;font-family:monospace;font-size:13px}
+    .meta{color:var(--muted);font-size:13px}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Kron Card — Agent Simulator (Card Department)</h1>
+  </header>
+
+  <main class="wrap">
+    <aside class="panel">
+      <h2 id="cust-name">Arek Kowalczuk</h2>
+      <div class="meta" id="cust-meta">PBZ Retail • Customer ID: 554433</div>
+
+      <div style="margin-top:10px">
+        <label>Contact</label>
+        <input id="cust-phone" value="+385 91 555 4444">
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Verification</label>
+        <select id="verify">
+          <option>— Select —</option>
+          <option>Verified: DOB match</option>
+          <option>Verified: Last4 SSN</option>
+          <option>Not verified</option>
+        </select>
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Agent Notes</label>
+        <textarea id="notes" placeholder="Write agent notes here..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="accent" onclick="saveNotes()">Save Notes</button>
+        <button class="secondary" onclick="loadSample()">Load Sample</button>
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>Card Application</strong>
+          <div class="meta">Simulate Kron credit card application flow</div>
+        </div>
+        <div class="meta">Agent: Marko (Card Dept.)</div>
+      </div>
+
+      <form id="appForm" onsubmit="return submitApp(event)" style="margin-top:12px">
+        <div class="row">
+          <div>
+            <label>Card Type</label>
+            <select id="cardType">
+              <option>Kron Classic</option>
+              <option>Kron Premium</option>
+              <option>Kron Business</option>
+            </select>
+          </div>
+          <div>
+            <label>Currency</label>
+            <select id="currency"><option>HRK</option><option>EUR</option></select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div>
+            <label>Requested Limit</label>
+            <input id="limit" type="number" value="5000">
+          </div>
+          <div>
+            <label>Monthly Income</label>
+            <input id="income" type="number" value="8000">
+          </div>
+        </div>
+
+        <div style="margin-top:8px">
+          <label>Employment</label>
+          <input id="employment" value="Employed — Acme d.o.o.">
+        </div>
+
+        <div style="margin-top:8px">
+          <label>Purpose / Notes</label>
+          <textarea id="purpose" placeholder="Customer purpose or additional info"></textarea>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="accent" type="submit">Submit Application</button>
+          <button type="button" onclick="quickApprove()" class="secondary">Quick Approve</button>
+          <button type="button" onclick="decline()" class="secondary">Decline</button>
+        </div>
+      </form>
+
+      <div style="margin-top:12px">
+        <strong>Application Summary</strong>
+        <div id="summary" style="margin-top:8px"></div>
+      </div>
+
+      <div style="margin-top:12px">
+        <strong>Activity Log</strong>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const logEl = document.getElementById('log');
+    function log(msg){const t=new Date().toLocaleTimeString();logEl.innerText = `[${t}] ${msg}\n` + logEl.innerText}
+
+    function saveNotes(){localStorage.setItem('kron_notes', document.getElementById('notes').value);log('Notes saved')}
+    function loadSample(){document.getElementById('cust-name').innerText='Ivana Perić';document.getElementById('cust-meta').innerText='PBZ Retail • Customer ID: 998877';document.getElementById('cust-phone').value='+385 91 998 877';document.getElementById('employment').value='Self-employed';log('Sample customer loaded')}
+
+    function submitApp(e){e.preventDefault();
+      const verified = document.getElementById('verify').value;
+      if(verified.indexOf('Not')>=0){alert('Customer not verified — complete verification before submitting');log('Attempted submit without verification');return false}
+
+      const data = {
+        name: document.getElementById('cust-name').innerText,
+        phone: document.getElementById('cust-phone').value,
+        card: document.getElementById('cardType').value,
+        limit: document.getElementById('limit').value,
+        income: document.getElementById('income').value,
+        employment: document.getElementById('employment').value,
+        purpose: document.getElementById('purpose').value
+      };
+      showSummary(data);
+      log('Application submitted for ' + data.name + ' — ' + data.card + ' — Limit ' + data.limit);
+      return false;
+    }
+
+    function showSummary(data){const s = `Name: ${data.name}\nPhone: ${data.phone}\nCard: ${data.card}\nLimit: ${data.limit}\nIncome: ${data.income}\nEmployer: ${data.employment}\nNotes: ${data.purpose}`;
+      document.getElementById('summary').innerText = s.replace(/\n/g,'\n');
+    }
+
+    function quickApprove(){const name=document.getElementById('cust-name').innerText;log('Quick approved for ' + name);alert('Application quick-approved.')} 
+    function decline(){const reason=prompt('Reason for decline','Insufficient income');if(reason){log('Application declined: ' + reason);alert('Application declined.')}}
+
+    (function(){const saved = localStorage.getItem('kron_notes'); if(saved){document.getElementById('notes').value = saved}})();
+  </script>
+</body>
+</html>
