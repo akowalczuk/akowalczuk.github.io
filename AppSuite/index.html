@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AppSuite — CIB HU Card Dept. Simulator</title>
+  <style>
+    :root{--bg:#f3f6fb;--panel:#fff;--accent:#2b6cb0;--danger:#c53030;--muted:#666}
+    *{box-sizing:border-box;font-family:Segoe UI,Helvetica,Arial,sans-serif}
+    body{margin:0;background:var(--bg);color:#111}
+    header{background:linear-gradient(90deg,var(--accent),#48a0ff);color:#fff;padding:14px 18px}
+    header h1{margin:0;font-size:18px}
+    .grid{display:grid;grid-template-columns:320px 1fr 340px;gap:14px;padding:14px}
+    .panel{background:var(--panel);border-radius:8px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea,button{width:100%;padding:8px;border-radius:6px;border:1px solid #e6eef8}
+    textarea{min-height:100px}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    .accent{background:var(--accent);color:#fff;border:0}
+    .danger{background:var(--danger);color:#fff;border:0}
+    .secondary{background:#f0f6ff;border:0;color:var(--accent)}
+    .log{height:160px;overflow:auto;background:#021428;color:#bfe8ff;padding:10px;border-radius:6px;font-family:monospace;font-size:13px}
+    .muted{color:var(--muted);font-size:13px}
+    @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AppSuite — CIB HU Customer Service</h1>
+  </header>
+
+  <main class="grid">
+    <aside class="panel">
+      <h2 id="cust-name">Arek Kowalczuk</h2>
+      <div class="muted">Customer ID: <strong id="cust-id">48604501582</strong></div>
+      <div style="margin-top:8px">
+        <label>Mobile</label>
+        <input id="cust-phone" value="+48604501582">
+      </div>
+
+      <div style="margin-top:8px">
+        <label>Customer Segment</label>
+        <input id="segment" value="Retail — Cardholder">
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Verification</label>
+        <select id="verify">
+          <option>— Select —</option>
+          <option>Verified: DOB</option>
+          <option>Verified: Last4</option>
+          <option>Not verified</option>
+        </select>
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Agent Notes</label>
+        <textarea id="notes" placeholder="Write notes about the interaction..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="accent" onclick="saveNotes()">Save</button>
+        <button class="secondary" onclick="loadSample()">Load</button>
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>Interaction</strong>
+          <div class="muted">Card department — actions and customer data</div>
+        </div>
+        <div style="text-align:right">
+          <div class="muted">Call status: <span id="call-status">Idle</span></div>
+          <div id="timer" style="font-weight:700;color:var(--accent)">00:00</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button onclick="startCall()">Start Call</button>
+        <button onclick="endCall()" class="secondary">End Call</button>
+        <button onclick="holdCall()" class="secondary">Hold</button>
+      </div>
+
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <label>Card</label>
+          <select id="cardSelect"><option>Principal — 1234</option><option>Supplementary — 5678</option></select>
+        </div>
+        <div>
+          <label>Available Limit</label>
+          <input id="availLimit" value="HRK 8,450.00">
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Action</label>
+        <select id="actionSelect">
+          <option>— Choose action —</option>
+          <option>Block Card</option>
+          <option>Unblock Card</option>
+          <option>Change Limit</option>
+          <option>Dispute Transaction</option>
+          <option>Send OTP</option>
+          <option>Create Ticket</option>
+        </select>
+      </div>
+
+      <div id="actionParams" style="margin-top:8px"></div>
+
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="accent" onclick="performAction()">Perform Action</button>
+        <button class="danger" onclick="emergencyBlock()">Emergency Block</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <strong>Activity Log</strong>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Customer Summary</strong>
+        <div class="muted">CIB HU</div>
+      </div>
+
+      <div style="margin-top:8px">
+        <div class="muted">Name:</div>
+        <div><strong id="summaryName">Arek Kowalczuk</strong></div>
+        <div class="muted" style="margin-top:8px">Customer ID:</div>
+        <div><strong id="summaryId">48604501582</strong></div>
+        <div class="muted" style="margin-top:8px">Products</div>
+        <div>VISA Classic, Mobile Banking</div>
+      </div>
+
+      <div style="margin-top:12px">
+        <strong>Quick Scripts</strong>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+          <button onclick="insertScript('Greeting: Dobar dan, ovdje CIB. Ja sam vaš agent. Kako vam mogu pomoći?')">Greeting</button>
+          <button onclick="insertScript('Verify: Molim vas potvrdite datum rođenja i zadnje 4 cifre OIB-a')">Verify</button>
+          <button onclick="insertScript('Close: Hvala na pozivu, ugodan dan!')">Close</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // Simple simulator logic
+    let timer=null, startTs=0;
+    const logEl=document.getElementById('log');
+    function log(msg){const t=new Date().toLocaleTimeString();logEl.innerText=`[${t}] ${msg}\n` + logEl.innerText}
+
+    function startCall(){ if(timer) return; startTs=Date.now(); timer=setInterval(updateTimer,500); document.getElementById('call-status').innerText='In Call'; updateTimer(); log('Call started with ' + document.getElementById('cust-name').innerText)}
+    function updateTimer(){ const s=Math.floor((Date.now()-startTs)/1000); const mm=String(Math.floor(s/60)).padStart(2,'0'); const ss=String(s%60).padStart(2,'0'); document.getElementById('timer').innerText=`${mm}:${ss}` }
+    function endCall(){ if(!timer){log('No active call to end');return} clearInterval(timer); timer=null; document.getElementById('call-status').innerText='Idle'; log('Call ended — duration ' + document.getElementById('timer').innerText); document.getElementById('timer').innerText='00:00'}
+    function holdCall(){ if(!timer){log('No call to hold');return} document.getElementById('call-status').innerText='On Hold'; log('Call placed on hold') }
+
+    // action parameter UI
+    const actionSelect = document.getElementById('actionSelect');
+    actionSelect.addEventListener('change', ()=>{
+      const v=actionSelect.value; const p=document.getElementById('actionParams'); p.innerHTML='';
+      if(v==='Change Limit'){
+        p.innerHTML = '<label>New Limit</label><input id="newLimit" type="number" value="10000">';
+      } else if(v==='Dispute Transaction'){
+        p.innerHTML = '<label>Transaction ID / Details</label><input id="txInfo" placeholder="TX12345 or description">';
+      } else if(v==='Send OTP'){
+        p.innerHTML = '<label>OTP Purpose</label><input id="otpPurpose" placeholder="e.g., verify login">';
+      } else if(v==='Create Ticket'){
+        p.innerHTML = '<label>Ticket Summary</label><textarea id="ticketSummary"></textarea>';
+      }
+    });
+
+    function performAction(){ const action = actionSelect.value; const verified = document.getElementById('verify').value;
+      if(verified.indexOf('Not')>=0 && action!=='Send OTP' && action!=='Create Ticket'){ alert('Customer not verified — complete verification or create ticket.'); log('Action blocked: not verified'); return }
+
+      if(action==='Block Card'){ log('Requested card block for ' + document.getElementById('cust-name').innerText); alert('Card blocked (mock)'); }
+      else if(action==='Unblock Card'){ log('Requested card unblock'); alert('Card unblocked (mock)'); }
+      else if(action==='Change Limit'){ const n=document.getElementById('newLimit').value; log('Limit change to ' + n); document.getElementById('availLimit').value = 'HRK ' + n; alert('Limit updated (mock)'); }
+      else if(action==='Dispute Transaction'){ const tx=document.getElementById('txInfo').value; log('Transaction disputed: ' + tx); alert('Dispute created (mock)'); }
+      else if(action==='Send OTP'){ const p=document.getElementById('otpPurpose').value; log('OTP sent for: ' + p); alert('OTP sent (mock)'); }
+      else if(action==='Create Ticket'){ const s=document.getElementById('ticketSummary').value; log('Ticket created: ' + s); alert('Ticket created (mock)'); }
+      else { alert('Select an action'); }
+    }
+
+    function emergencyBlock(){ log('Emergency block placed on all cards for ' + document.getElementById('cust-name').innerText); alert('Emergency block applied (mock)'); }
+
+    function saveNotes(){ localStorage.setItem('appsuite_notes', document.getElementById('notes').value); log('Notes saved') }
+    function insertScript(text){ const n=document.getElementById('notes'); n.value = (n.value? n.value + '\n' : '') + text; log('Inserted script text') }
+    function loadSample(){ document.getElementById('cust-name').innerText='Arek Kowalczuk'; document.getElementById('cust-id').innerText='48604501582'; document.getElementById('cust-phone').value='+48604501582'; log('Loaded provided customer data') }
+
+    // initialize
+    (function(){ const s=localStorage.getItem('appsuite_notes'); if(s) document.getElementById('notes').value = s; })();
+  </script>
+</body>
+</html>
