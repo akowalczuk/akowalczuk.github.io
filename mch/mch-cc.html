@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCH CC — One Page App</title>
+  <style>
+    :root {
+      --bg: #eef0f2;
+      --surface: #fff;
+      --surface-alt: #f5f6f7;
+      --panel: #ebebeb;
+      --panel-border: #d7d7d7;
+      --text: #222;
+      --muted: #6c6c6c;
+      --heading: #111;
+      --accent: #b01720;
+      --accent-dark: #800f16;
+      --shadow: 0 12px 30px rgba(0,0,0,0.08);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #eaedf0 0%, #f6f7f8 100%);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: #131313;
+      color: #fff;
+      border-radius: 18px;
+      padding: 14px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: #222;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .topbar-items {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      background: rgba(12, 175, 64, 0.12);
+      border-radius: 999px;
+      font-size: 13px;
+      color: #e9f8e9;
+    }
+
+    .status-pill::before {
+      content: '';
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #0cec2a;
+      display: inline-block;
+    }
+
+    .user-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.08);
+      padding: 10px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .user-block strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .user-block small {
+      color: #ccc;
+    }
+
+    .topbar-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 18px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    .nav-bar {
+      margin-top: 18px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .nav-bar a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 10px 10px;
+      border-radius: 10px;
+    }
+
+    .nav-bar a:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .panel {
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      padding: 18px 22px;
+      background: #333;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .panel-section {
+      padding: 20px 22px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .panel-section:last-child {
+      border-bottom: none;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--heading);
+    }
+
+    .panel-text {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .info-table th,
+    .info-table td {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      text-align: left;
+    }
+
+    .info-table th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding-top: 0;
+    }
+
+    .info-table td {
+      color: #222;
+    }
+
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .info-table .label {
+      width: 30%;
+      font-weight: 700;
+      color: var(--accent-dark);
+    }
+
+    .info-table .note {
+      color: var(--muted);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface-alt);
+      border: 1px solid rgba(0,0,0,0.07);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .checkbox-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .checkbox-row label {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .status-card {
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--surface-alt);
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .status-card .card-header {
+      padding: 16px 18px;
+      background: #383838;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .status-card .card-body {
+      padding: 16px 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .status-card .card-body div {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #fff;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.07);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status-card .card-body .checked {
+      color: var(--accent-dark);
+    }
+
+    .status-card .card-body .checked::before {
+      content: '✓';
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #dcf3e8;
+      color: #2e7d32;
+      font-weight: 700;
+    }
+
+    .collapsible {
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+
+    .collapsible .row {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .collapsible .row:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .collapsible .row strong {
+      font-size: 15px;
+      color: var(--heading);
+    }
+
+    .collapsible .row span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .collapsible .row svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--muted);
+      transform: rotate(90deg);
+    }
+
+    .panel-overview {
+      padding: 18px 22px 24px;
+      display: grid;
+      gap: 14px;
+      background: #fafafa;
+    }
+
+    .panel-overview .section-note {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #f3f4f5;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .grid-right {
+      display: grid;
+      gap: 22px;
+    }
+
+    @media (max-width: 1080px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar,
+      .topbar-actions,
+      .nav-bar {
+        justify-content: center;
+      }
+      .topbar {
+        text-align: center;
+      }
+      .topbar-items,
+      .topbar-actions {
+        width: 100%;
+        justify-content: center;
+      }
+      .nav-bar {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">V</div>
+        <div class="brand-name">VÚB BANKA</div>
+      </div>
+      <div class="topbar-items">
+        <div class="status-pill">Host: ONLINE</div>
+        <div class="user-block"><strong>Ján Testovací</strong><small>ID 123456789</small></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary">Digical ID</button>
+        <button class="btn btn-primary">Dokončenie prihlásenia</button>
+        <button class="btn btn-secondary">Odhlásenie</button>
+      </div>
+    </header>
+
+    <nav class="nav-bar">
+      <a href="#">Domov</a>
+      <a href="#">Platby</a>
+      <a href="#">Účty</a>
+      <a href="#">Karty</a>
+      <a href="#">Úvery</a>
+      <a href="#">Investície</a>
+      <a href="#">Nastavenia</a>
+      <a href="#">Bezpečnosť</a>
+      <a href="#">Nastavenia klienta</a>
+    </nav>
+
+    <div class="main-content">
+      <div class="panel">
+        <div class="panel-header">Kategorizácia</div>
+        <div class="panel-section">
+          <div class="collapsible">
+            <div class="row">
+              <strong>Informatívne a rizikové kódy</strong>
+              <svg viewBox="0 0 24 24"><path d="M8 5l7 7-7 7"></path></svg>
+            </div>
+            <div class="panel-overview">
+              <table class="info-table">
+                <thead>
+                  <tr>
+                    <th>KÓD BANK. VZŤAHU</th>
+                    <th>ĎALŠIE KROKY</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="label">OCD</td>
+                    <td class="note">Strata dokladov</td>
+                  </tr>
+                  <tr>
+                    <td class="label">FIK</td>
+                    <td class="note">Fiktívny klient, na pobočke neobsluhovať</td>
+                  </tr>
+                  <tr>
+                    <td class="label">PRM_DOCUMENT_EXPIRED</td>
+                    <td class="note">Doklad klienta expiroval, aktualizujte ho.</td>
+                  </tr>
+                  <tr>
+                    <td class="label">PRM_KYC_TO_BE_UPDATED</td>
+                    <td class="note">KYC dotazník klienta neexistuje alebo jeho posledná verzia nie je aktuálna. Je potrebné aktualizovať KYC dotazník na klienta prostredníctvom MIA.</td>
+                  </tr>
+                  <tr>
+                    <td class="label" style="color:#2d7b3b;">PRM_GDPR_TO_BE_UPDATED</td>
+                    <td class="note">Klient neposkytol súhlas s marketingovým oslovovaním. Overte prosím, či svoje rozhodnutie nezmenil.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="collapsible">
+            <div class="row">
+              <strong>Účty</strong>
+              <span>Používateľ má prístup k nasledujúcemu produktu</span>
+              <svg viewBox="0 0 24 24"><path d="M8 5l7 7-7 7"></path></svg>
+            </div>
+            <div class="panel-overview">
+              <div class="panel-text">V tejto sekcii sa zobrazujú tie účty, ktoré máte nastavené ako svoje obľúbené.</div>
+              <div class="checkbox-row">
+                <input type="checkbox" checked disabled>
+                <label>Ostatné účty</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="collapsible">
+            <div class="row">
+              <strong>Zobraziť produkty</strong>
+              <svg viewBox="0 0 24 24"><path d="M8 5l7 7-7 7"></path></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="grid-right">
+        <div class="status-card">
+          <div class="card-header">Stav migrácie</div>
+          <div class="card-body">
+            <div><input type="checkbox" checked disabled><label>Klient zaradený do migrácie</label></div>
+            <div><input type="checkbox" disabled><label>Duálny klient</label></div>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <div class="card-header">Podpis zmluvy k NB/Digical</div>
+          <div class="card-body">
+            <div class="checked">Zmluva k NB - 11.10.2013 14:23:42</div>
+            <div><input type="checkbox" disabled><label>Zmluva k Digical</label></div>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <div class="card-header">Preferencia oslovovania</div>
+          <div class="card-body">
+            <div><input type="checkbox" disabled><label>Súhlas s ponukou produktov a služieb VÚB banky a skupiny Intesa Sanpaolo</label></div>
+            <div><input type="checkbox" disabled><label>Súhlas s ponukou produktov a služieb tretích strán</label></div>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <div class="card-header">Ponuka pre klienta</div>
+          <div class="card-body">
+            <div class="label">OÚL</div>
+            <div class="note">KYC dotazník</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
