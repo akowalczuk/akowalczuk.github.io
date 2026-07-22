@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VÚB Banka - Jednostránkový panel</title>
+  <style>
+    :root {
+      --bg: #f4f4f4;
+      --panel: #f7f7f7;
+      --panel-border: #d7d7d7;
+      --surface: #ffffff;
+      --text: #222222;
+      --muted: #6e6e6e;
+      --primary: #b0141d;
+      --dark: #3c3c3c;
+      --header: #333333;
+      --shadow: 0 8px 20px rgba(0,0,0,0.08);
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: #202020;
+      color: #fff;
+      border-radius: 16px;
+      padding: 16px 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #a0a0a0;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0, 185, 0, 0.12);
+      color: #e8f9ea;
+      font-size: 13px;
+    }
+
+    .status-chip span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #03c700;
+      display: inline-block;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .topbar-right div,
+    .topbar-right button {
+      font-size: 14px;
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+
+    .topbar-user strong {
+      color: #ffffff;
+    }
+
+    .topbar-user small {
+      color: #cccccc;
+    }
+
+    .topbar button {
+      border: none;
+      border-radius: 12px;
+      background: #8b0000;
+      color: #fff;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-top: 22px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      background: #333;
+      color: #fff;
+      padding: 18px 24px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .section-body {
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      border-radius: 16px;
+      background: var(--bg);
+      border: 1px solid var(--panel-border);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .card-header svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--muted);
+    }
+
+    .card-subtitle {
+      padding: 0 22px 18px;
+      color: var(--muted);
+      line-height: 1.6;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .card-details {
+      padding: 18px 22px 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .panel-summary {
+      border-radius: 14px;
+      background: #f0f0f0;
+      padding: 16px 18px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .action-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      cursor: pointer;
+    }
+
+    .action-card:hover {
+      background: rgba(0,0,0,0.02);
+    }
+
+    .action-card .arrow {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.04);
+    }
+
+    .product-card {
+      padding: 20px 22px;
+      background: var(--bg);
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .product-card button {
+      border: 1px solid var(--panel-border);
+      background: #fff;
+      color: var(--dark);
+      padding: 10px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .table-panel {
+      border-radius: 16px;
+      background: var(--bg);
+      border: 1px solid var(--panel-border);
+      overflow: hidden;
+    }
+
+    .table-head {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0;
+      padding: 16px 22px;
+      background: rgba(0,0,0,0.03);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    .table-body {
+      padding: 28px 22px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .table-footer {
+      padding: 18px 22px;
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(0,0,0,0.02);
+    }
+
+    .table-footer button {
+      border: none;
+      border-radius: 999px;
+      background: #333;
+      color: #fff;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .topbar-right {
+        width: 100%;
+        justify-content: center;
+      }
+      .table-head {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .table-head div:nth-child(n+3) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo">
+          <div class="logo-box">V</div>
+          <div class="logo-text">VÚB Banka</div>
+        </div>
+        <div class="status-chip"><span></span>Host: ONLINE</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-user"><strong>Karolina Ylmch-Ficová</strong><small>ID 990000560</small></div>
+        <button>Dokončenie prihlasenia</button>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-header">Kategorizácia</div>
+      <div class="section-body">
+        <div class="panel-summary">Používateľ má prístup k nasledujúcemu produktu</div>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <div style="font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Účty</div>
+            </div>
+            <div>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5H5z"></path></svg>
+            </div>
+          </div>
+          <div class="card-subtitle">V tejto sekcii sa zobrazujú tie účty, ktoré máte nastavené ako svoje obľúbené.</div>
+          <div class="action-card">
+            <span>Ostatné účty</span>
+            <span class="arrow">›</span>
+          </div>
+        </article>
+
+        <div class="panel-summary">Používateľ nemá prístup k nasledujúcim produktom</div>
+
+        <article class="product-card">
+          <button>Zobraziť produkty</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">Kontaktná história</div>
+      <div class="table-panel">
+        <div class="table-head">
+          <div>KANÁL</div>
+          <div>MÉDIUM</div>
+          <div>SMER</div>
+          <div>PARENT ID</div>
+          <div>DÁTUM/ČAS</div>
+          <div>IDENTIFIKÁCIA</div>
+          <div>ZDROJ</div>
+        </div>
+        <div class="table-body">Nebol nájdený žiadny záznam.</div>
+        <div class="table-footer"><button>Zobraziť celú históriu</button></div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
