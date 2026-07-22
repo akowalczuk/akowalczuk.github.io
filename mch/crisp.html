@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CR-ISP Portal</title>
+  <style>
+    :root {
+      --orange: #e07d1f;
+      --orange-dark: #c15f07;
+      --bg: #eef1f4;
+      --panel: #fff;
+      --text: #2c2c2c;
+      --muted: #6d6d6d;
+      --border: #d1d5db;
+      --green: #2d8c43;
+      --red: #d82d2d;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+    header { background: linear-gradient(90deg, #ff9800, #e07d1f); padding: 16px 24px; color: #fff; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    header .brand { display: flex; align-items: center; gap: 14px; }
+    header .brand-logo { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.24); display: grid; place-items: center; font-weight: 700; font-size: 20px; }
+    header .brand-title { font-size: 18px; font-weight: 700; letter-spacing: 0.08em; }
+    header .user-info { text-align: right; font-size: 14px; }
+    header .user-info .name { font-weight: 700; }
+    .breadcrumb { padding: 14px 24px; background: #f7f8fa; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; color: #4f4f4f; border-bottom: 1px solid #e5e8ed; }
+    .breadcrumb a { color: #4f4f4f; text-decoration: none; }
+    .page { max-width: 1380px; margin: 18px auto 32px; padding: 0 18px; }
+    .summary-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; display: grid; gap: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .summary-item { padding: 14px 16px; border-radius: 8px; background: #f7f8fa; border: 1px solid #e6e9ee; }
+    .summary-item strong { display: block; margin-bottom: 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+    .summary-item span { font-size: 14px; font-weight: 600; color: var(--text); }
+    .layout { display: grid; grid-template-columns: 1fr 320px; gap: 18px; margin-top: 18px; }
+    .products-panel, .side-panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .panel-header { background: #2d8c43; color: #fff; padding: 14px 18px; font-weight: 700; letter-spacing: 0.05em; font-size: 14px; }
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { background: #2d8c43; color: #fff; padding: 12px 10px; text-align: left; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    tbody td { padding: 12px 10px; border-bottom: 1px solid #e5e8ed; font-size: 13px; }
+    tbody tr:nth-child(odd) td { background: #fbfbfb; }
+    tbody tr:nth-child(even) td { background: #fff; }
+    .section-label { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #4f4f4f; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; font-weight: 600; }
+    .pill { display: inline-flex; gap: 8px; align-items: center; padding: 8px 12px; border-radius: 999px; background: #e7f7e9; color: #2d7b3b; border: 1px solid #cde7d2; font-size: 12px; }
+    .pill::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #2d8c43; }
+    .side-panel { display: grid; gap: 0; }
+    .side-block { border: 1px solid #e5e8ed; border-radius: 8px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .side-block header { background: #f4f6f9; padding: 12px 14px; font-weight: 700; color: #2a2a2a; font-size: 13px; }
+    .side-block .block-body { padding: 14px; display: grid; gap: 12px; }
+    .checkbox-row { display: flex; align-items: center; gap: 12px; padding: 12px 10px; border-radius: 8px; background: #fafafa; border: 1px solid #e9ecef; }
+    .checkbox-row label { font-size: 13px; color: #333; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .button-row button { flex: 1; min-width: 100px; border: none; border-radius: 6px; padding: 10px 14px; cursor: pointer; font-weight: 600; letter-spacing: 0.01em; font-size: 12px; }
+    .button-row .btn-primary { background: var(--orange); color: #fff; }
+    .button-row .btn-primary:hover { background: var(--orange-dark); }
+    .button-row .btn-secondary { background: #f5f6f7; color: #333; border: 1px solid #d1d5db; }
+    .button-row .btn-secondary:hover { background: #f0f1f2; }
+    .usage-chart { background: #fff; border: 1px solid #e5e8ed; border-radius: 8px; padding: 16px; text-align: center; }
+    .usage-chart-title { color: var(--muted); font-size: 12px; margin-bottom: 14px; font-weight: 600; }
+    .usage-bar { width: 60px; height: 200px; margin: 0 auto 14px; display: grid; grid-template-rows: repeat(8, 1fr); gap: 4px; }
+    .usage-bar div { border-radius: 4px; background: #e5e8ed; }
+    .usage-bar div.active { background: var(--green); }
+    .usage-count { font-size: 28px; font-weight: 700; color: var(--text); }
+    .usage-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .note-box { background: #fbfbfb; border: 1px solid #e5e8ed; border-radius: 6px; padding: 12px; font-size: 12px; color: #555; }
+    .profile-actions { display: grid; gap: 10px; }
+    .profile-actions button { border: 1px solid #c1c7cd; background: #fff; border-radius: 6px; padding: 10px 14px; cursor: pointer; font-weight: 600; color: #333; font-size: 12px; }
+    .profile-actions button:hover { background: #f4f6f9; }
+    .caption { font-size: 12px; color: var(--muted); }
+    .row-highlight-red { background: var(--red) !important; color: #fff !important; }
+    .row-highlight-green { background: #2d8c43 !important; color: #fff !important; }
+    .row-highlight-blue { color: #1e5ba8 !important; font-weight: 600; }
+    @media (max-width: 1080px) { .layout { grid-template-columns: 1fr; } .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 760px) { header { flex-direction: column; align-items: stretch; } .breadcrumb { justify-content: center; } .summary-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-logo">CR</div>
+      <div class="brand-title">CR-ISP PORTAL</div>
+    </div>
+    <div class="user-info">
+      <div class="name">Czikora Michal</div>
+      <div>CR-ISP PORTAL</div>
+    </div>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="#">Domov</a>
+    <span> / </span>
+    <a href="#">Základná obrazovka</a>
+    <span> / </span>
+    <strong>Call centrum</strong>
+  </div>
+
+  <main class="page">
+    <section class="summary-card">
+      <div class="section-label">Klient</div>
+      <div class="summary-grid">
+        <div class="summary-item"><strong>Klient</strong><span>Ing. Ján Novák</span></div>
+        <div class="summary-item"><strong>Adresa</strong><span>Milynské Nivy, Bratislava</span></div>
+        <div class="summary-item"><strong>Segment</strong><span>Mass market</span></div>
+        <div class="summary-item"><strong>ISDD Segment</strong><span>Mass market</span></div>
+        <div class="summary-item"><strong>Číslo klienta</strong><span>42</span></div>
+        <div class="summary-item"><strong>Tel. kontakt</strong><span>E-mail:</span></div>
+        <div class="summary-item"><strong>Mobil</strong><span>421/00 - 123456</span></div>
+        <div class="summary-item"><strong>E-mail</strong><span></span></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="products-panel">
+        <div class="panel-header">Pouzívatelské produkty</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Názov produktu</th>
+                <th>Vlastníctvo</th>
+                <th>Aktivita</th>
+                <th>Ponuka</th>
+                <th>Popis</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="row-highlight-blue"><strong>Bezné úcty</strong></td><td>ANO</td><td>Neaktívny</td><td></td><td></td></tr>
+              <tr><td>Trvaly príkaz</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Inkaso</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td class="row-highlight-blue"><strong>Sporiaci úcet</strong></td><td>ANO</td><td></td><td></td><td></td></tr>
+              <tr><td class="row-highlight-red">VUB Online Banking</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td class="row-highlight-green">NonstopBanking</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Internet banking</td><td>ANO</td><td></td><td></td><td></td></tr>
+              <tr><td>Mobile banking</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Kontakt</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td class="row-highlight-blue"><strong>Úvery</strong></td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Spotrebné úvery</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>CPI poistenie úveru</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Flexidebet</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Hypotekárne úvery</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>CPI poistenie úveru</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Poistenie nehnutelností</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Poistenie domácnosti</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td class="row-highlight-blue"><strong>Investície</strong></td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Podielové fondy</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>VUBAM prémiové sporenie</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Termínované vklady</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Vkladné knižky</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Cenné papiere</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td class="row-highlight-blue"><strong>Poistenie a dôchodok</strong></td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Životné poistenie</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Nezivotné poistenie</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Poistenie platieb</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Dôchodkové sporenie</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td class="row-highlight-blue"><strong>Karty</strong></td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Debetné karty</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Kreditné karty</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Kreditná karta American Express</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td class="row-highlight-blue"><strong>Služby</strong></td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Služba informovania o platobnom úcte (AISP)</td><td></td><td></td><td>Zaznamenat</td><td></td></tr>
+              <tr><td>Investičné poradenstvo</td><td></td><td></td><td></td><td></td></tr>
+              <tr><td>Osobný finanční plán</td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="side-block">
+          <header>Zoznam kampaní</header>
+          <div class="block-body">
+            <div class="button-row">
+              <button class="btn-secondary">Zrusit</button>
+              <button class="btn-secondary">SSV Profil klienta</button>
+            </div>
+            <button class="btn-primary" style="width:100%;">Profil klienta</button>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <header>Pouzívané produktové skupiny</header>
+          <div class="block-body" style="display:grid;place-items:center;padding:24px 14px;">
+            <div class="usage-chart">
+              <div class="usage-chart-title">Produktové skupiny</div>
+              <div class="usage-bar">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="active"></div>
+                <div class="active"></div>
+                <div class="active"></div>
+              </div>
+              <div class="usage-count">2/8</div>
+              <div class="usage-label">Aktuálne pouzívané</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <header>Interakcie</header>
+          <div class="block-body">
+            <button class="btn-primary" style="width:100%;">Interakcie</button>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <header>Dotazníky</header>
+          <div class="block-body">
+            <div class="note-box">Preferencie marketingovej komunikácie</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
