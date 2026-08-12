@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VÚB Banka – Žiadosti na pobočke</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f3f3;
+      --surface: #ffffff;
+      --surface-strong: #f7f7f7;
+      --border: #e1e1e1;
+      --text: #2b2b2b;
+      --muted: #747474;
+      --primary: #f26a21;
+      --primary-dark: #d35416;
+      --accent: #0f86d2;
+      --danger: #d13627;
+      --shadow: 0 18px 40px rgba(22, 22, 25, 0.08);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #f3f3f3 0%, #ededed 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #d64e24;
+      color: #fff;
+      font-weight: 700;
+      font-size: 24px;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-text {
+      line-height: 1.2;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tab {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .panel-body {
+      padding: 24px 28px 28px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-item label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .filter-item input,
+    .filter-item select {
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 0 14px;
+      font-size: 15px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+    }
+
+    .filter-item select {
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23747474' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 10px 6px;
+    }
+
+    .form-row-wide {
+      grid-column: span 2;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-start;
+      padding-top: 20px;
+    }
+
+    .checkbox-row input {
+      width: 16px;
+      height: 16px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .btn {
+      min-width: 160px;
+      border: none;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary {
+      background: #444;
+      color: #fff;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .table-wrapper {
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: #fff;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+    }
+
+    .table-head,
+    .table-row {
+      display: grid;
+      grid-template-columns: 1.6fr 1.2fr 1.8fr 1.6fr 2fr 1fr;
+      align-items: center;
+      gap: 0;
+      padding: 16px 22px;
+    }
+
+    .table-head {
+      background: #f8f8f8;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .table-row {
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-size: 15px;
+      min-height: 66px;
+    }
+
+    .table-row strong {
+      color: #1c1c1c;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f5f5f5;
+      color: var(--text);
+    }
+
+    .status-pill::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      background: var(--primary);
+    }
+
+    .status-pill.alt::before {
+      background: #1e8b5b;
+    }
+
+    .status-pill.info::before {
+      background: #2b7bb9;
+    }
+
+    .status-steps {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #dfe0e2;
+    }
+
+    .status-dot.active {
+      background: currentColor;
+    }
+
+    .status-steps.orange { color: #f26a21; }
+    .status-steps.blue { color: #2b7bb9; }
+    .status-steps.green { color: #1e8b5b; }
+
+    .row-action {
+      justify-self: end;
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.08);
+      color: var(--muted);
+      background: #fff;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    @media (max-width: 1100px) {
+      .filter-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .form-row-wide {
+        grid-column: span 3;
+      }
+      .table-head,
+      .table-row {
+        grid-template-columns: 1.6fr 1.2fr 1.6fr 1.6fr 1.6fr 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .header,
+      .tabs {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .table-head,
+      .table-row {
+        grid-template-columns: 1fr;
+        padding: 18px 20px;
+      }
+      .table-head {
+        display: none;
+      }
+      .table-row {
+        grid-template-columns: 1fr;
+        border-top: 1px solid var(--border);
+        padding: 18px 20px;
+      }
+      .table-cell {
+        display: grid;
+        gap: 10px;
+      }
+      .table-cell label {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .row-action {
+        position: absolute;
+        top: 18px;
+        right: 20px;
+      }
+      .table-row {
+        position: relative;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark">V</div>
+        <div class="brand-text">
+          <div class="brand-title">VÚB BANKA</div>
+          <div class="brand-subtitle">Peter Euro0651 · 33300 - ŠKOLENIE1</div>
+        </div>
+      </div>
+      <nav class="tabs">
+        <a class="tab active" href="#">Nová žiadosť</a>
+        <a class="tab" href="#">Žiadosti</a>
+        <a class="tab" href="#">Moje vrátené úlohy</a>
+      </nav>
+    </header>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h1 class="panel-title">Žiadosti na pobočke</h1>
+      </div>
+      <div class="panel-body">
+        <div class="filter-grid">
+          <div class="filter-item">
+            <label for="request-number">Číslo žiadosti</label>
+            <input id="request-number" type="text" placeholder="Zadajte číslo žiadosti">
+          </div>
+          <div class="filter-item">
+            <label for="request-type">Typ žiadosti</label>
+            <select id="request-type">
+              <option value="">Vybrať typ</option>
+              <option>VÚB Hypo účelová</option>
+              <option>VÚB Hypo bezúčelová</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label for="request-status">Stav žiadosti</label>
+            <select id="request-status">
+              <option value="">Vybrať stav</option>
+              <option>Nová žiadosť</option>
+              <option>Rozpracovaný IZ</option>
+              <option>Akceptovaná žiadosť</option>
+            </select>
+          </div>
+          <div class="filter-item form-row-wide">
+            <label for="applicant-name">Meno a priezvisko žiadateľa</label>
+            <input id="applicant-name" type="text" placeholder="Zadajte meno a priezvisko">
+          </div>
+          <div class="filter-item">
+            <label for="applicant-id">Rodné číslo žiadateľa</label>
+            <input id="applicant-id" type="text" placeholder="Zadajte rodné číslo">
+          </div>
+          <div class="filter-item">
+            <label for="cis-id">CIS ID žiadateľa</label>
+            <input id="cis-id" type="text" placeholder="Zadajte CIS ID">
+          </div>
+          <div class="filter-item">
+            <label for="channel">Kanál</label>
+            <select id="channel">
+              <option value="">Vybrať kanál</option>
+              <option>IAP</option>
+              <option>WVM</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label for="semafor">Semafor</label>
+            <select id="semafor">
+              <option value="">Vybrať semafor</option>
+              <option>Červený</option>
+              <option>Modrý</option>
+              <option>Zelený</option>
+            </select>
+          </div>
+          <div class="filter-item checkbox-row">
+            <input id="only-my" type="checkbox">
+            <label for="only-my">Iba moje žiadosti</label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-secondary">Vymazať vyhľadávanie</button>
+          <button type="button" class="btn btn-primary">Vyhľadať</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top: 22px;">
+      <div class="table-wrapper">
+        <div class="table-head">
+          <div>Dátum vytvorenia</div>
+          <div>Číslo žiadosti</div>
+          <div>Meno žiadateľa</div>
+          <div>Typ žiadosti</div>
+          <div>Stav</div>
+          <div>Kanál</div>
+        </div>
+
+        <div class="table-row">
+          <div>11.08.2026 10:22:26</div>
+          <div><strong>300047532110826</strong></div>
+          <div>Ondrej Filip</div>
+          <div>VÚB Hypo účelová</div>
+          <div>
+            <div class="status-cell">
+              <div class="status-steps orange">
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot"></span>
+                <span class="status-dot"></span>
+              </div>
+              <div class="status-pill">Nová žiadosť</div>
+            </div>
+          </div>
+          <div>IAP</div>
+        </div>
+
+        <div class="table-row">
+          <div>11.08.2026 09:23:59</div>
+          <div><strong>400020933110826</strong></div>
+          <div>Ľudmila W-Bačová</div>
+          <div>VÚB Hypo bezúčelová</div>
+          <div>
+            <div class="status-cell">
+              <div class="status-steps blue">
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot"></span>
+              </div>
+              <div class="status-pill info">Rozpracovaný IZ</div>
+            </div>
+          </div>
+          <div>WVM</div>
+        </div>
+
+        <div class="table-row">
+          <div>11.08.2026 08:08:07</div>
+          <div><strong>400047332110826</strong></div>
+          <div>Eva Ihnačáková</div>
+          <div>VÚB Hypo účelová</div>
+          <div>
+            <div class="status-cell">
+              <div class="status-steps green">
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+              </div>
+              <div class="status-pill alt">Schválená – súhlas s podmienkami</div>
+            </div>
+          </div>
+          <div>WVM</div>
+        </div>
+
+        <div class="table-row">
+          <div>10.08.2026 15:09:29</div>
+          <div><strong>400020833100826</strong></div>
+          <div>Oldrich W-Baranka</div>
+          <div>VÚB Hypo bezúčelová</div>
+          <div>
+            <div class="status-cell">
+              <div class="status-steps blue">
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot active"></span>
+                <span class="status-dot"></span>
+              </div>
+              <div class="status-pill info">Akceptovaná žiadosť</div>
+            </div>
+          </div>
+          <div>WVM</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
